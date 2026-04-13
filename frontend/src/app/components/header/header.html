@@ -1,0 +1,24 @@
+<header class="kbtu-header">
+  <div class="header-left" routerLink="/" style="cursor: pointer;">
+    <img src="assets/kbtu-lf-icon.png" class="logo-img" alt="KBTU logo">
+    <span class="logo-title">LOST & FOUND</span>
+  </div>
+
+  <div class="header-right">
+    @if (authService.currentUser()) {
+      <div class="user-info">
+        <div class="user-avatar">
+          {{ authService.currentUser()?.charAt(0)?.toUpperCase() }}
+        </div>
+        <span class="user-details">
+          {{ authService.currentUser() }} | 
+          <button class="logout-btn" (click)="onLogout()">Logout</button>
+        </span>
+      </div>
+      <button class="post-btn" routerLink="/post" routerLinkActive="active">Post an Item</button>
+    } 
+    @else {
+      <button class="login-btn" routerLink="/login" routerLinkActive="active">Sign In</button>
+    }
+  </div>
+</header>
