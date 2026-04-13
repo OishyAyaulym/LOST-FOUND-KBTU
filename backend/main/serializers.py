@@ -3,16 +3,31 @@ from .models import Category, Item, Claim
 from django.contrib.auth.models import User
 
 class ItemSerializer(serializers.ModelSerializer):
-    category_name = serializers.ReadOnlyField(source='category.name')
+    imageUrl = serializers.URLField(source='image_url', allow_blank=True)
+    type = serializers.CharField(source='item_type')
+    date = serializers.DateTimeField(source='created_at', format="%Y-%m-%d", read_only=True)
+    postedBy = serializers.ReadOnlyField(source='finder.username')
+    category = serializers.ReadOnlyField(source='category.name')
     
     class Meta:
         model = Item
-        fields = '__all__'
+        fields = [
+            'id', 'title', 'category', 'location',
+            'date', 'type', 'description', 'imageUrl', 'status', 'postedBy'
+        ]
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ['id', 'name', 'icon']
+
+class ClaimSerializer(serializers.ModelSerializer):
+    itemId = serializers.PrimaryKeyRelatedField(source='item', queryset=Item.objects.all())
+    date = serializers.DateTimeField(source='created_at', format="%Y-%m-%d", read_only=True)
+
+    class Meta:
+        model = Claim
+        fields = ['id', 'itemId', 'description', 'status', 'date']
 
 class StatsSerializer(serializers.Serializer):
     total_items = serializers.IntegerField()
