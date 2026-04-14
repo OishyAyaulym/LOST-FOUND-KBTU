@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PostItemComponent } from './post-item';
+import { ItemDetailComponent } from './item-detail';
 
-describe('PostItem', () => {
-  let component: PostItemComponent;
-  let fixture: ComponentFixture<PostItemComponent>;
+describe('ItemDetail', () => {
+  let component: ItemDetailComponent;
+  let fixture: ComponentFixture<ItemDetailComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PostItemComponent]
+      imports: [ItemDetailComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(PostItemComponent);
+    fixture = TestBed.createComponent(ItemDetailComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
@@ -21,6 +21,3 @@ describe('PostItem', () => {
     expect(component).toBeTruthy();
   });
 });
-
-
-

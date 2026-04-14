@@ -17,6 +17,7 @@ import { FooterComponent } from './components/footer/footer';
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })
+
 export class AppComponent {
   title = 'KBTU Lost & Found';
 }

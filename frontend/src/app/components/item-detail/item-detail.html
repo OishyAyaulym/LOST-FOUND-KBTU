@@ -1,0 +1,27 @@
+<div class="detail-wrapper" *ngIf="item">
+  <div class="item-info">
+    <h1>{{ item.title }}</h1>
+    <p>{{ item.description }}</p>
+  </div>
+
+  <hr>
+
+  <div class="claim-area" *ngIf="authService.isLoggedIn() && !isMyPost && !hasAlreadyClaimed">
+    <h3>Это ваша вещь? ✋</h3>
+    <p>Докажите владение (опишите приметы, обои на экране и т.д.)</p>
+    
+    <textarea 
+      [(ngModel)]="claimDescription" 
+      placeholder="Напишите здесь..." 
+      class="claim-input">
+    </textarea>
+    
+    <button (click)="sendClaim()" class="btn-claim">
+      Отправить запрос на возврат
+    </button>
+  </div>
+
+  <div class="success-msg" *ngIf="hasAlreadyClaimed">
+    <p>Ваша заявка принята и находится на рассмотрении (Pending).</p>
+  </div>
+</div>

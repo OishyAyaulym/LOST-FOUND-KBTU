@@ -50,12 +50,12 @@ export class PostItemComponent {
     const formData = new FormData();
     formData.append('title', this.title);
     formData.append('description', this.description);
-    formData.append('status', this.status);
+    const formattedType = this.status.charAt(0).toUpperCase() + this.status.slice(1); 
+    formData.append('item_type', formattedType);
     formData.append('category', this.category);
     formData.append('location', this.location);
-    
     if (this.selectedFile) {
-      formData.append('image', this.selectedFile, this.selectedFile.name);
+      formData.append('imageUrl', this.selectedFile, this.selectedFile.name);
     }
 
     // 2. Отправляем через сервис с обработкой типов
