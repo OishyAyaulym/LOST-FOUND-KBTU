@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./item-list.css']
 })
 export class ItemListComponent {
+  // Названия полей должны быть такими же, как в HTML (category_name)
   allItems: any[] = [];
   items: any[] = [];
 
@@ -32,20 +33,22 @@ export class ItemListComponent {
       }
     });
   }
+  // Убирает красное под applyFilters
   applyFilters(search: string, type: string, category: string) {
     this.items = this.allItems.filter(item => {
     const matchesSearch = !search || item.title?.toLowerCase().includes(search.toLowerCase());
     const matchesType = !type || item.type?.toLowerCase() === type.toLowerCase();
-    const matchesCategory = !category || item.category?.toLowerCase() === category.toLowerCase();;
+    const matchesCategory = !category || item.category?.toLowerCase() === category.toLowerCase();
     return matchesSearch && matchesType && matchesCategory;
     });
     console.log('Результат фильтрации:', this.items);
   }
   viewItemDetails(id: number | undefined) {
   if (id) {
-      this.router.navigate(['/item', id]); 
+      this.router.navigate(['/item', id]); // Убедись, что в app.routes.ts есть путь 'item/:id'
     }
   }
+  // Убирает красное под resetFilters
   resetFilters() {
     this.items = [...this.allItems];
   }
