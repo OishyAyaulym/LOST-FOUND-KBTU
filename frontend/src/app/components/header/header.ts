@@ -12,14 +12,13 @@ import { AuthService } from '../../services/auth'; // Проверь путь к
 })
 export class HeaderComponent {
   
-  // Внедряем AuthService как public, чтобы обращаться к нему из HTML
   constructor(
     public authService: AuthService, 
     private router: Router
   ) {}
 
   onLogout() {
-    this.authService.logout(); // Очищаем данные (localStorage)
-    this.router.navigate(['/login']); // Уходим на страницу логина
+    this.authService.logout(); 
+    this.router.navigate(['/login']);
   }
 }

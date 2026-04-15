@@ -17,7 +17,7 @@
 .filter-btns {
   display: flex;
   gap: 8px;
-  align-items: stretch; /* Растягивает элементы по высоте самого высокого (кнопки Поиск) */
+  align-items: stretch; 
 }
 
 .search-apply {
@@ -42,13 +42,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;        /* Чтобы картинка не вылезала за скругления */
+  overflow: hidden;    
 }
 
 .reset-icon-img {
   width: 100%;           
   height: 100%;
-  object-fit: cover;       /* Масштабируем без искажений */
+  object-fit: cover; 
 }
 
 .items-grid {

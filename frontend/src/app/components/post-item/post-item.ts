@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
   styleUrls: ['./post-item.css']
 })
 export class PostItemComponent {
-  // Поля формы, которые будут связаны через [(ngModel)]
   title: string = '';
   description: string = '';
   status: string = 'lost';
@@ -24,7 +23,6 @@ export class PostItemComponent {
 
   constructor(private itemService: ItemService ,private router:Router) {}
 
-  // Обработка выбора файла
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (file) {
@@ -37,28 +35,24 @@ export class PostItemComponent {
     }
   }
 
-  // Удаление выбранного фото
   removeImage(event: Event) {
     event.stopPropagation();
     this.selectedFile = null;
     this.imagePreview = null;
   }
 
-  // Отправка формы
   submitForm() {
-    // 1. Создаем объект FormData для отправки файлов и текста
     const formData = new FormData();
     formData.append('title', this.title);
     formData.append('description', this.description);
-    formData.append('status', this.status);
+    const formattedType = this.status.charAt(0).toUpperCase() + this.status.slice(1); 
+    formData.append('item_type', formattedType);
     formData.append('category', this.category);
     formData.append('location', this.location);
-    
     if (this.selectedFile) {
-      formData.append('image', this.selectedFile, this.selectedFile.name);
+      formData.append('imageUrl', this.selectedFile, this.selectedFile.name);
     }
 
-    // 2. Отправляем через сервис с обработкой типов
     this.itemService.createItem(formData).subscribe({
       next: (response: any) => {
         console.log('Успешно отправлено:', response);
@@ -73,7 +67,6 @@ export class PostItemComponent {
     });
   }
 
-  // Очистка формы после успеха
   resetForm() {
     this.title = '';
     this.description = '';

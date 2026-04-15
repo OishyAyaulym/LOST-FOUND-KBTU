@@ -1,7 +1,6 @@
 .site-footer {
   background-color: #1a2634;
   color: white;
-  /* Уменьшаем вертикальные отступы: 20px сверху и 10px снизу */
   padding: 20px 20px 10px; 
   border-top: 1px solid #2d3d4f;
 }
@@ -50,7 +49,7 @@
 }
 
 .no-results {
-  grid-column: 1 / -1; /* Растянуть на всю ширину сетки */
+  grid-column: 1 / -1; 
   display: flex;
   justify-content: center;
   padding: 80px 0;
