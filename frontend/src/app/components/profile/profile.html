@@ -1,0 +1,72 @@
+<div class="profile-dashboard">
+  <div class="dashboard-top">
+    <div class="user-main-card glass-panel">
+      <div class="large-avatar">
+        {{ ($any(user)?.email || user || 'D').toString().slice(0,1).toUpperCase() }}
+      </div>
+      <div class="user-info-text">
+        <h2>{{ ($any(user)?.email || user).split('@')[0] }}</h2>
+        <p class="email-sub">{{ $any(user)?.email || user }}</p>
+        <span class="student-id-tag">🆔 STUDENT ID: {{ user?.studentId }}</span>
+      </div>
+    </div>
+
+    <div class="stats-card glass-panel">
+      <h3>Total Stats:</h3>
+      <div class="stats-row">
+        <span>{{ myClaims.length }} Items Found</span>
+      </div>
+      <div class="stats-row">
+        <span>1 Claim Sent</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="content-column glass-panel">
+      <h3 class="column-title">📦 MY FOUND ITEMS (ACTIVE POSTS)</h3>
+      <div class="items-list">
+        <div class="item-card-modern" *ngFor="let claim of myClaims">
+          <div class="item-icon-box">
+             <span class="emoji-icon">📦</span>
+          </div>
+          <div class="item-details">
+            <h4>{{ claim.title }}</h4>
+            <p>Found: {{ claim.date }}</p>
+          </div>
+          <div class="item-actions">
+            <span class="status-badge-modern" [ngClass]="claim.status?.toLowerCase()">
+              {{ claim.status }}
+            </span>
+            <div class="btn-group">
+              <button class="btn-sm outline">View Claims</button>
+              <button class="btn-sm solid">Edit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-column glass-panel">
+      <h3 class="column-title">📝 MY SENT CLAIMS (MY LOST ITEMS)</h3>
+      <div class="items-list">
+        <div class="item-card-modern highlight">
+          <div class="item-icon-box">
+             <span class="emoji-icon">🔋</span>
+          </div>
+          <div class="item-details">
+            <h4>Powerbank Samsung (Black)</h4>
+            <p>Sent: 14.04.2026</p>
+          </div>
+          <div class="item-actions">
+            <span class="status-badge-modern pending">PENDING</span>
+            <div class="btn-group">
+              <button class="btn-sm outline">View Status</button>
+              <button class="btn-sm solid">Message Finder</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

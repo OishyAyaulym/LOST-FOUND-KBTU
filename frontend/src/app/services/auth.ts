@@ -1,30 +1,35 @@
 import { Injectable, signal } from '@angular/core';
+import { User } from '../models/interfaces';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  // Используем Signal для мгновенного обновления имени в шапке
-  currentUser = signal<string | null>(localStorage.getItem('user_name'));
+  // Сигнал теперь хранит объект User
+  currentUser = signal<User | null>(this.getUserFromStorage());
 
-  constructor() {}
-
-  // Имитация входа
-  login(name: string) {
-    localStorage.setItem('user_name', name);
-    localStorage.setItem('auth_token', 'fake-jwt-token-kbtu');
-    this.currentUser.set(name);
+  private getUserFromStorage(): User | null {
+    const data = localStorage.getItem('user_data');
+    return data ? JSON.parse(data) : null;
   }
 
-  // Настоящая логика выхода
+  // Метод для компонента Profile, чтобы ушла твоя ошибка TS2551
+  getCurrentUser(): User | null {
+    return this.currentUser();
+  }
+
+  login(userData: User) {
+    localStorage.setItem('user_data', JSON.stringify(userData));
+    localStorage.setItem('auth_token', 'fake-token');
+    this.currentUser.set(userData);
+  }
+
   logout() {
-    localStorage.removeItem('user_name');
-    localStorage.removeItem('auth_token');
+    localStorage.clear();
     this.currentUser.set(null);
   }
 
-  // Проверка: залогинен ли пользователь
   isLoggedIn(): boolean {
     return !!localStorage.getItem('auth_token');
   }
+
+
 }

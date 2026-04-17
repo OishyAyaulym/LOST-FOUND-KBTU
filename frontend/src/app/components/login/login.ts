@@ -29,33 +29,29 @@ export class LoginComponent {
     const email = this.loginData.email.toLowerCase().trim();
     const studentId = this.loginData.studentId.trim();
 
-    // 1. Проверка на пустые поля
     if (!email || !this.loginData.password || !studentId) {
       this.errorMessage = 'Пожалуйста, заполните все поля';
       return;
     }
 
-    // 2. Проверка домена почты (@kbtu.kz)
     if (!email.endsWith('@kbtu.kz')) {
       this.errorMessage = 'Используйте только корпоративную почту @kbtu.kz';
       return;
     }
 
-    // 3. Проверка формата Student ID 
-    if (studentId.length < 9) {
-      this.errorMessage = 'Некорректный Student ID (минимум 9 символов)';
-      return;
-    }
-
-    // Если все проверки пройдены:
     this.errorMessage = '';
     
-    // Имитируем вход через сервис (сохраняем почту как имя пользователя)
-    this.authService.login(email); 
+
+    const userData = {
+      id: Date.now(), 
+      email: email,
+      fullName: email.split('@')[0], 
+      studentId: studentId
+    };
+
+    this.authService.login(userData); 
     
-    console.log('Вход выполнен:', email, studentId);
-    
-    // Переход на главную
+    console.log('Вход выполнен для:', userData);
     this.router.navigate(['/']); 
   }
 }

@@ -8,17 +8,23 @@
     @if (authService.currentUser()) {
       <div class="user-info">
         <div class="user-avatar">
-          {{ authService.currentUser()?.charAt(0)?.toUpperCase() }}
+          {{ ($any(authService.currentUser())?.email || authService.currentUser() || 'U').toString().slice(0,1).toUpperCase() }}
         </div>
-        <span class="user-details">
-          {{ authService.currentUser() }} | 
-          <button class="logout-btn" (click)="onLogout()">Logout</button>
-        </span>
+        
+        <div class="user-details-wrapper" style="display: flex; align-items: center;">
+          <a routerLink="/profile" 
+             style="color: #3498db; text-decoration: underline; cursor: pointer; font-weight: bold; padding: 5px 10px;">
+            {{ $any(authService.currentUser())?.email || authService.currentUser() }}
+          </a>
+          
+          <span style="margin: 0 5px; color: white;"> | </span>
+          
+          <button class="logout-btn" (click)="onLogout()" style="cursor: pointer;">Logout</button>
+        </div>
       </div>
-      <button class="post-btn" routerLink="/post" routerLinkActive="active">Post an Item</button>
-    } 
-    @else {
-      <button class="login-btn" routerLink="/login" routerLinkActive="active">Sign In</button>
+      <button class="post-btn" routerLink="/post">Post an Item</button>
+    } @else {
+      <button class="login-btn" routerLink="/login">Sign In</button>
     }
   </div>
 </header>
