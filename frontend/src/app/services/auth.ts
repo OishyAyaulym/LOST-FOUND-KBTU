@@ -11,7 +11,7 @@ export class AuthService {
     return data ? JSON.parse(data) : null;
   }
 
-  // Метод для компонента Profile, чтобы ушла твоя ошибка TS2551
+  // Метод для компонента Profile
   getCurrentUser(): User | null {
     return this.currentUser();
   }

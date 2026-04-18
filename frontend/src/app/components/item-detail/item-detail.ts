@@ -1,57 +1,84 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { CommonModule, Location } from '@angular/common';
+import { Claim, Comment, Item } from '../../models/interfaces';
+import { ItemService } from '../../services/item'; // Сервис для получения данных
 import { ClaimService } from '../../services/claim';
-import { AuthService } from '../../services/auth';
-import { Claim } from '../../models/interfaces';
 
 @Component({
   selector: 'app-item-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule],
   templateUrl: './item-detail.html',
+  imports: [CommonModule, FormsModule],
   styleUrls: ['./item-detail.css']
 })
 export class ItemDetailComponent implements OnInit {
-  item: any; // Данные о вещи, которые приходят от API (там есть id)
-  claimDescription: string = '';
-  isMyPost: boolean = false;
-  hasAlreadyClaimed: boolean = false;
+  selectedItem: Item | undefined;
+  alreadyClaimed: boolean = false;
+  currentIndex: number = 0;
+
+  newClaim: Partial<Claim> = { description: '' };
+  comments: Comment[] = [];
+  newCommentText: string = '';
 
   constructor(
     private route: ActivatedRoute,
+    private itemService: ItemService,
     private claimService: ClaimService,
-    public authService: AuthService
+    private location: Location
   ) {}
 
-  ngOnInit() {
-    // Здесь должен быть твой код загрузки данных вещи по ID из URL
-    // Допустим, после загрузки: this.item = data;
+  ngOnInit(): void {
+  const itemId = Number(this.route.snapshot.paramMap.get('id'));
+
+  this.itemService.getItemById(itemId).subscribe({
+    next: (data) => {
+      this.selectedItem = data;
+      this.currentIndex = 0;
+      // Если images пришел как undefined, превращаем в пустой массив, чтобы .length не ломался
+      if (!this.selectedItem.images) {
+        this.selectedItem.images = [];
+      }
+    },
+    error: (err) => {
+      console.error('Load error:', err);
+      this.location.back();
+    }
+  });
+}
+
+  // Безопасное переключение
+  nextImage() {
+    if (this.selectedItem?.images && this.selectedItem.images.length > 0) {
+      this.currentIndex = (this.currentIndex + 1) % this.selectedItem.images.length;
+    }
   }
 
-  sendClaim() {
-    if (!this.claimDescription.trim()) {
-      alert('Пожалуйста, введите описание!');
-      return;
+  prevImage() {
+    if (this.selectedItem?.images && this.selectedItem.images.length > 0) {
+      this.currentIndex = (this.currentIndex - 1 + this.selectedItem.images.length) % this.selectedItem.images.length;
     }
+  }
 
-    // Собираем объект ТОЧНО как ждет ClaimSerializer
-    const newClaim: Claim = {
-      itemId: this.item.id,          // Ключ itemId из сериализатора
-      description: this.claimDescription
+  goBack() { this.location.back(); }
+
+  submitClaim() {
+    if (!this.newClaim.description || !this.selectedItem) return;
+    const claimData: Claim = {
+      item: this.selectedItem.id!,
+      description: this.newClaim.description,
+      status: 'pending'
     };
-
-    this.claimService.createClaim(newClaim).subscribe({
-      next: (response) => {
-        alert(`Заявка успешно отправлена! Статус: ${response.status}. Дата: ${response.date}`);
-        this.claimDescription = '';
-        this.hasAlreadyClaimed = true;
-      },
-      error: (err) => {
-        console.error('Ошибка при отправке:', err);
-        alert('Произошла ошибка. Проверьте консоль разработчика.');
-      }
+    this.claimService.createClaim(claimData).subscribe(() => {
+      this.alreadyClaimed = true;
+      alert('Claim sent!');
     });
+  }
+
+  postComment() {
+    if (!this.newCommentText.trim()) return;
+    this.comments.push({ authorName: 'Student', text: this.newCommentText } as any);
+    this.newCommentText = '';
   }
 }

@@ -11,76 +11,64 @@ import { Router } from '@angular/router';
   templateUrl: './post-item.html',
   styleUrls: ['./post-item.css']
 })
+
+
 export class PostItemComponent {
-  // Поля формы, которые будут связаны через [(ngModel)]
   title: string = '';
   description: string = '';
   status: string = 'lost';
-  category: string = '';
+  category: string = 'other';
   location: string = '';
 
-  selectedFile: File | null = null;
-  imagePreview: string | ArrayBuffer | null = null;
+  // Массивы для хранения файлов и их превью
+  selectedFiles: File[] = [];
+  imagePreviews: (string | ArrayBuffer | null)[] = [];
 
-  constructor(private itemService: ItemService ,private router:Router) {}
+  constructor(private itemService: ItemService, private router: Router) {}
 
-  // Обработка выбора файла
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview = reader.result;
-      };
-      reader.readAsDataURL(file);
+  onFilesSelected(event: any) {
+    const files: FileList = event.target.files;
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        this.selectedFiles.push(file);
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.imagePreviews.push(reader.result);
+        };
+        reader.readAsDataURL(file);
+      }
     }
   }
 
-  // Удаление выбранного фото
-  removeImage(event: Event) {
+  removeImage(index: number, event: Event) {
     event.stopPropagation();
-    this.selectedFile = null;
-    this.imagePreview = null;
+    this.selectedFiles.splice(index, 1);
+    this.imagePreviews.splice(index, 1);
   }
 
-  // Отправка формы
   submitForm() {
-    // 1. Создаем объект FormData для отправки файлов и текста
     const formData = new FormData();
     formData.append('title', this.title);
     formData.append('description', this.description);
-    const formattedType = this.status.charAt(0).toUpperCase() + this.status.slice(1); 
-    formData.append('item_type', formattedType);
-    formData.append('category', this.category);
     formData.append('location', this.location);
-    if (this.selectedFile) {
-      formData.append('imageUrl', this.selectedFile, this.selectedFile.name);
-    }
+    formData.append('category', this.category);
+    
+    const formattedType = this.status.charAt(0).toUpperCase() + this.status.slice(1); 
+    formData.append('type', formattedType); 
 
-    // 2. Отправляем через сервис с обработкой типов
+    // Добавляем все файлы в FormData под одним ключом (обычно 'images' или 'images[]')
+    this.selectedFiles.forEach((file) => {
+      formData.append('images', file, file.name); 
+    });
+
     this.itemService.createItem(formData).subscribe({
-      next: (response: any) => {
-        console.log('Успешно отправлено:', response);
-        alert('Объявление успешно создано!');
-        this.resetForm();
+      next: () => {
+        alert('Success!');
         this.router.navigate(['/']);
       },
-      error: (error: any) => {
-        console.error('Ошибка при отправке:', error);
-        alert('Произошла ошибка при сохранении объявления.');
-      }
+      error: (err) => console.error(err)
     });
-  }
-
-  // Очистка формы после успеха
-  resetForm() {
-    this.title = '';
-    this.description = '';
-    this.status = 'lost';
-    this.category = '';
-    this.location = '';
-    this.selectedFile = null;
-    this.imagePreview = null;
   }
 }

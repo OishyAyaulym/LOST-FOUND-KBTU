@@ -10,10 +10,8 @@ export const routes: Routes = [
   { path: '', component: ItemListComponent },
   { path: 'login', component: LoginComponent },
   { path: 'profile', component: ProfileComponent },
-
-  // Детали конкретного предмета (id передается динамически)
-  // Именно этот путь нужен для метода viewItemDetails(id)
   { path: 'item/:id', component: ItemDetailComponent },
   { path: 'post', component: PostItemComponent },
   { path: '**', redirectTo: '' }
+
 ];
