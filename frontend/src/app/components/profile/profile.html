@@ -1,0 +1,134 @@
+<div class="profile-dashboard">
+ <div class="dashboard-top">
+   <div class="user-main-card glass-panel">
+     <div class="large-avatar">
+       {{ ($any(user)?.email || 'D').slice(0,1).toUpperCase() }}
+     </div>
+     <div class="user-info-text">
+       <h2>{{ ($any(user)?.email || 'User').split('@')[0] }}</h2>
+       <p class="email-sub">{{ $any(user)?.email }}</p>
+       <span class="student-id-tag">🆔 STUDENT ID: {{ user?.studentId || 'Not set' }}</span>
+     </div>
+   </div>
+
+
+   <div class="stats-card glass-panel">
+     <h3>Total Stats:</h3>
+     <div class="stats-row">
+       <span>{{ myClaims.length }} Items Found</span>
+     </div>
+     <div class="stats-row">
+       <span>{{ mySentRequests.length }} Claims Sent</span>
+     </div>
+   </div>
+ </div>
+
+
+ <div class="dashboard-grid">
+   <div class="content-column glass-panel">
+     <h3 class="column-title">📦 MY FOUND ITEMS</h3>
+     <div class="items-list">
+       <div class="item-card-modern" *ngFor="let item of myClaims">
+         <div class="item-icon-box">
+            <img *ngIf="item.images && item.images.length > 0" [src]="item.images[0].image_url" class="item-img">
+            <span *ngIf="!item.images || item.images.length === 0" class="emoji-icon">📦</span>
+         </div>
+         <div class="item-details">
+           <h4>{{ item.title }}</h4>
+           <p>Found: {{ item.date }}</p>
+         </div>
+         <div class="item-actions">
+           <span class="status-badge-modern" [ngClass]="item.status">
+             {{ item.status }}
+           </span>
+           <div class="btn-group">
+             <button class="btn-sm outline" (click)="openModal(item, 'claims')">View Claim</button>
+             <button class="btn-sm solid" (click)="openModal(item, 'edit')">Edit</button>
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>
+
+
+   <div class="content-column glass-panel">
+     <h3 class="column-title">📝 My Sent Claims(My Lost Items) </h3>
+     <div class="items-list">
+       <div class="item-card-modern highlight" *ngFor="let req of mySentRequests">
+         <div class="item-icon-box">
+            <img *ngIf="req.images && req.images.length > 0" [src]="req.images[0].image_url" class="item-img">
+            <span *ngIf="!req.images || req.images.length === 0" class="emoji-icon">🔋</span>
+         </div>
+         <div class="item-details">
+           <h4>{{ req.title }}</h4>
+           <p>Sent: {{ req.date }}</p>
+         </div>
+         <div class="item-actions">
+           <span class="status-badge-modern pending">{{ req.status }}</span>
+           <div class="btn-group">
+             <button class="btn-sm outline" (click)="openModal(req, 'view-my-claim')">View Claim</button>
+             <button class="btn-sm solid" (click)="openModal(req, 'edit-my-claim')">Edit</button>
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>
+ </div>
+</div>
+
+
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+ <div class="modal-content glass-panel" (click)="$event.stopPropagation()">
+  
+   <div class="modal-header">
+     <h3 class="modal-title">{{ selectedItem?.title }}</h3>
+     <button class="close-x" (click)="closeModal()">×</button>
+   </div>
+
+
+   <div class="modal-gallery" *ngIf="selectedItem?.images">
+       <img *ngFor="let img of selectedItem.images" [src]="img.image_url" class="gallery-thumb">
+   </div>
+
+
+   <div class="modal-divider"></div>
+
+
+   <div *ngIf="modalType === 'claims'">
+     <h4 class="section-subtitle">Students who claimed this:</h4>
+     <div class="claim-row">
+       <div class="student-meta">
+         <span class="meta-label">User Email:</span>
+         <span class="meta-value">s_student@kbtu.kz</span>
+       </div>
+       <button class="btn-approve">Approve</button>
+     </div>
+   </div>
+
+
+   <div *ngIf="modalType === 'edit'">
+     <label class="meta-label">Edit Item Title:</label>
+     <input [(ngModel)]="selectedItem.title" class="modern-input">
+     <button (click)="closeModal()" class="btn-save-full">Save Changes</button>
+   </div>
+
+
+   <div *ngIf="modalType === 'view-my-claim'">
+     <h4 class="section-subtitle">Your Request Details:</h4>
+     <div class="claim-detail-box">
+       <p class="meta-label">Your message to founder:</p>
+       <p class="claim-text">"I lost this item in the canteen. Please contact me."</p>
+     </div>
+   </div>
+
+
+   <div *ngIf="modalType === 'edit-my-claim'">
+     <h4 class="section-subtitle">Update Your Request:</h4>
+     <label class="meta-label">Message to founder:</label>
+     <textarea class="modern-textarea" placeholder="Describe the item better..."></textarea>
+     <button (click)="closeModal()" class="btn-save-full">Update Request</button>
+   </div>
+
+
+ </div>
+</div>

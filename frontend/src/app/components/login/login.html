@@ -1,0 +1,52 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-header">
+      <h2>Login to KBTU L&F</h2>
+      <p class="subtitle">Enter your university credentials</p>
+    </div>
+
+    <form (ngSubmit)="onLogin()">
+      <div class="input-group">
+        <label>Email Address (@kbtu.kz)</label>
+        <input 
+          type="email" 
+          name="email" 
+          [(ngModel)]="loginData.email" 
+          placeholder="e.g. name@kbtu.kz" 
+          required>
+      </div>
+
+      <div class="input-group">
+        <label>Student ID</label>
+        <input 
+          type="text" 
+          name="studentId" 
+          [(ngModel)]="loginData.studentId" 
+          placeholder="e.g. 24B030XXX" 
+          required>
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <input 
+          type="password" 
+          name="password" 
+          [(ngModel)]="loginData.password" 
+          placeholder="••••••••" 
+          required>
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-message">
+          <span class="error-icon">⚠️</span> {{ errorMessage }}
+        </div>
+      }
+
+      <button type="submit" class="btn-login-submit">SIGN IN</button>
+    </form>
+
+    <div class="login-footer">
+      <span>Authorized access only for KBTU students.</span>
+    </div>
+  </div>
+</div>
