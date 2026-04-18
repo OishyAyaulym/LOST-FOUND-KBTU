@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth'; 
+import { User } from '../../models/interfaces';
 
 @Component({
   selector: 'app-login',
@@ -28,28 +29,30 @@ export class LoginComponent {
   onLogin() {
     const email = this.loginData.email.toLowerCase().trim();
     const studentId = this.loginData.studentId.trim();
-
-    if (!email || !this.loginData.password || !studentId) {
-      this.errorMessage = 'Пожалуйста, заполните все поля';
+    const password = this.loginData.password;
+    if (!email || !password || !studentId) {
+      this.errorMessage = 'Please fill in all fields';
       return;
     }
-
     if (!email.endsWith('@kbtu.kz')) {
-      this.errorMessage = 'Используйте только корпоративную почту @kbtu.kz';
+      this.errorMessage = 'Use your @kbtu.kz email only';
       return;
     }
-
-    if (studentId.length < 9) {
-      this.errorMessage = 'Некорректный Student ID (минимум 9 символов)';
-      return;
-    }
-
     this.errorMessage = '';
-    
-    this.authService.login(email); 
-    
-    console.log('Вход выполнен:', email, studentId);
-    
-    this.router.navigate(['/']); 
+    const userData: User = {
+      email: email,
+      studentId: studentId,
+      password: password,
+      fullName: email.split('@')[0],
+    };
+    this.authService.login(userData).subscribe({
+      next: (response) => {
+        console.log('Success login:', response);
+        this.router.navigate(['/']); 
+      },
+      error: (err) => {
+        this.errorMessage = 'Invalid credentials or server error';
+      }
+    });
   }
 }

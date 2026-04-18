@@ -19,8 +19,16 @@ export interface Item {
 
 export interface Claim {
   id?: number;
-  itemId: number;       // Важно: itemId (как в сериализаторе), а не item
+  itemId: number;       
   description: string;
   status?: 'pending' | 'approved' | 'rejected'; 
-  date?: string;        // Важно: date (как в сериализаторе), а не created_at
+  date?: string;        
+}
+
+export interface User {
+  id?: number;
+  email: string;
+  fullName?: string;
+  studentId: string;
+  password?: string;
 }

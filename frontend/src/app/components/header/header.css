@@ -38,3 +38,23 @@
   font-size: 13px;
   cursor: pointer;
 }
+.profile-click-area {
+  color: #3498db; 
+  text-decoration: none;
+  cursor: pointer !important;
+  display: inline-block;
+  padding: 5px; 
+  position: relative;
+  z-index: 20;
+}
+
+.profile-click-area:hover {
+  text-decoration: underline;
+  color: #2980b9;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
