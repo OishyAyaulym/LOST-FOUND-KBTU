@@ -1,10 +1,10 @@
-from rest_framework import status
+from rest_framework import status, generics, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .models import Item, Category
-from .serializers import ItemSerializer, StatsSerializer, CategorySerializer
+from .models import Item, Category, Claim, Comment
+from .serializers import ItemSerializer, StatsSerializer, CategorySerializer, ClaimSerializer, CommentSerializer
 
 @api_view(['GET'])
 def get_stats(request):
@@ -25,6 +25,12 @@ def recent_items(request):
 class ItemList(APIView):
     def get(self, request):
         items = Item.objects.all()
+        search_query = request.query_params.get('search', None)
+        if search_query:
+            items = items.filter(title__icontains=search_query)
+        category_id = request.query_params.get('category', None)
+        if category_id:
+            items = items.filter(category_id=category_id)
         serializer = ItemSerializer(items, many=True)
         return Response(serializer.data)
 
@@ -33,7 +39,7 @@ class ItemList(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         serializer = ItemSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(finder=request.user) # Привязка к текущему юзеру
+            serializer.save(finder=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -54,6 +60,21 @@ class ItemDetail(APIView):
         item = self.get_object(pk)
         item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class ItemCommentList(generics.ListAPIView):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        item_id = self.kwargs['item_id']
+        return Comment.objects.filter(item_id=item_id)
+
+class CommentCreate(generics.CreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 class CategoryList(APIView):
     def get(self, request):
@@ -61,4 +82,42 @@ class CategoryList(APIView):
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
     
-
+class ClaimList(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        claims = Claim.objects.filter(user=request.user)
+        serializer = ClaimSerializer(claims, many=True)
+        return Response(serializer.data)
+    def post(self, request):
+        serializer = ClaimSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class ClaimDetail(APIView):
+    permission_classes = [IsAuthenticated]
+    def get_object(self, pk, user):
+        try:
+            return Claim.objects.get(pk=pk, user=user)
+        except Claim.DoesNotExist:
+            return None
+    def get(self, request, pk):
+        claim = self.get_object(pk, request.user)
+        if not claim: return Response({"error": "Not found"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ClaimSerializer(claim)
+        return Response(serializer.data)
+    def put(self, request, pk):
+        claim = self.get_object(pk, request.user)
+        if not claim: return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = ClaimSerializer(claim, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, pk):
+        claim = self.get_object(pk, request.user)
+        if not claim: return Response(status=status.HTTP_404_NOT_FOUND)
+        claim.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
