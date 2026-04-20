@@ -1,10 +1,12 @@
 from rest_framework import status, generics, permissions
 from rest_framework.decorators import api_view, permission_classes
+from django.contrib.auth import get_user_model
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .models import Item, Category, Claim
-from .serializers import ItemSerializer, StatsSerializer, CategorySerializer, ClaimSerializer
+from .models import Item, Category, Claim, Comment
+from .serializers import ItemSerializer, StatsSerializer, CategorySerializer, ClaimSerializer, CommentSerializer, RegisterSerializer
 
 @api_view(['GET'])
 def get_stats(request):
@@ -60,6 +62,21 @@ class ItemDetail(APIView):
         item = self.get_object(pk)
         item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class ItemCommentList(generics.ListAPIView):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        item_id = self.kwargs['item_id']
+        return Comment.objects.filter(item_id=item_id)
+
+class CommentCreate(generics.CreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 class CategoryList(APIView):
     def get(self, request):
@@ -105,4 +122,8 @@ class ClaimDetail(APIView):
         if not claim: return Response(status=status.HTTP_404_NOT_FOUND)
         claim.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
+    
+class RegisterView(generics.CreateAPIView):
+    queryset = get_user_model().objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterSerializer

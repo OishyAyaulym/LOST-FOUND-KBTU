@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ItemService } from '../../services/item'; 
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth'
 
 @Component({
   selector: 'app-post-item',
@@ -21,7 +22,7 @@ export class PostItemComponent {
   selectedFile: File | null = null;
   imagePreview: string | ArrayBuffer | null = null;
 
-  constructor(private itemService: ItemService ,private router:Router) {}
+  constructor(private itemService: ItemService , private authService: AuthService, private router:Router) {}
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
@@ -42,27 +43,29 @@ export class PostItemComponent {
   }
 
   submitForm() {
-    const formData = new FormData();
-    formData.append('title', this.title);
-    formData.append('description', this.description);
-    const formattedType = this.status.charAt(0).toUpperCase() + this.status.slice(1); 
-    formData.append('item_type', formattedType);
-    formData.append('category', this.category);
-    formData.append('location', this.location);
-    if (this.selectedFile) {
-      formData.append('imageUrl', this.selectedFile, this.selectedFile.name);
-    }
+    const currentUser = this.authService.currentUser();
+    console.log('User data:', this.authService.currentUser());
+    
+    const itemData = {
+      title: this.title,
+      description: this.description,
+      location: this.location,
+      category: Number(this.category), // Шлем ID (цифру)
+      type: this.status.charAt(0).toUpperCase() + this.status.slice(1), // Шлем "Type", так как в сериализаторе 'type'
+      //finder: 1 ,//currentUser?.id, // Шлем ID пользователя в поле 'finder'
+      status: 'available'
+    };
 
-    this.itemService.createItem(formData).subscribe({
-      next: (response: any) => {
-        console.log('Успешно отправлено:', response);
-        alert('Объявление успешно создано!');
-        this.resetForm();
+    console.log('Данные для отправки:', itemData);
+
+    this.itemService.createItem(itemData).subscribe({
+      next: (response) => {
+        alert('Ура! Объявление создано!');
         this.router.navigate(['/']);
       },
-      error: (error: any) => {
-        console.error('Ошибка при отправке:', error);
-        alert('Произошла ошибка при сохранении объявления.');
+      error: (err) => {
+        console.error('Ошибка от Django:', err.error);
+        alert('Ошибка 400. Проверь детали в консоли.');
       }
     });
   }

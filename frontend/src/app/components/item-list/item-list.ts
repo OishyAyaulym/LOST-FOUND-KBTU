@@ -34,14 +34,15 @@ export class ItemListComponent {
     });
   }
   
-  applyFilters(search: string, type: string, category: string) {
+  applyFilters(search: string, type: string, categoryId: string) {
     this.items = this.allItems.filter(item => {
-    const matchesSearch = !search || item.title?.toLowerCase().includes(search.toLowerCase());
-    const matchesType = !type || item.type?.toLowerCase() === type.toLowerCase();
-    const matchesCategory = !category || item.category?.toLowerCase() === category.toLowerCase();
-    return matchesSearch && matchesType && matchesCategory;
+      const matchesSearch = !search || item.title?.toLowerCase().includes(search.toLowerCase());
+      const matchesType = !type || item.type?.toLowerCase() === type.toLowerCase();
+      const matchesCategory = !categoryId || item.category?.toString() === categoryId;
+      return matchesSearch && matchesType && matchesCategory;
     });
-    console.log('Результат фильтрации:', this.items);
+    console.log('Поиск по тексту:', search);
+    console.log('Найдено:', this.items.length);
   }
   viewItemDetails(id: number | undefined) {
   if (id) {

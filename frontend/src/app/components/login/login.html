@@ -1,8 +1,8 @@
 <div class="login-page">
   <div class="login-card">
     <div class="login-header">
-      <h2>Login to KBTU L&F</h2>
-      <p class="subtitle">Enter your university credentials</p>
+      <h2>{{ isLoginMode ? 'Login to KBTU L&F' : 'Create Account' }}</h2>
+      <p class="subtitle">{{ isLoginMode ? 'Enter your university credentials' : 'Register for the Lost & Found service' }}</p>
     </div>
 
     <form (ngSubmit)="onLogin()">
@@ -42,10 +42,13 @@
         </div>
       }
 
-      <button type="submit" class="btn-login-submit">SIGN IN</button>
+      <button type="submit" class="btn-login-submit">{{ isLoginMode ? 'SIGN IN' : 'REGISTER' }}</button>
     </form>
 
     <div class="login-footer">
+      <div (click)="isLoginMode = !isLoginMode" style="cursor: pointer; color: #007bff; margin-bottom: 10px; font-weight: 500;">
+        {{ isLoginMode ? "Don't have an account? Sign Up" : "Already have an account? Log In" }}
+      </div>
       <span>Authorized access only for KBTU students.</span>
     </div>
   </div>

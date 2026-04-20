@@ -28,7 +28,7 @@ export interface Claim {
 export interface User {
   id?: number;
   email: string;
-  fullName?: string;
-  studentId: string;
+  username: string;
+  student_id: string;
   password?: string;
 }

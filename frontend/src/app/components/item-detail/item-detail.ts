@@ -5,6 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 import { ClaimService } from '../../services/claim';
 import { AuthService } from '../../services/auth';
 import { Claim } from '../../models/interfaces';
+import { ItemService } from '../../services/item';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-item-detail',
@@ -22,12 +24,36 @@ export class ItemDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private claimService: ClaimService,
-    public authService: AuthService
+    private itemService: ItemService,
+    public authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    // Здесь должен быть твой код загрузки данных вещи по ID из URL
-    // Допустим, после загрузки: this.item = data;
+    const idFromUrl = Number(this.route.snapshot.paramMap.get('id'));
+    console.log('ID из URL:', idFromUrl);
+
+    if (idFromUrl) {
+      this.itemService.getItems().subscribe({
+        next: (allData: any[]) => {
+          console.log('Все данные с сервера:', allData);
+          
+          // Ищем предмет. Важно: проверяем, что id совпадает
+          this.item = allData.find(i => Number(i.id) === idFromUrl);
+          
+          if (this.item) {
+            console.log('Предмет найден!', this.item);
+            const currentUsername = localStorage.getItem('username');
+            this.isMyPost = (this.item.postedBy === currentUsername);
+          } else {
+            console.warn('Предмет с таким ID не найден в списке');
+          }
+          
+          this.cdr.detectChanges(); // Если импортировала ChangeDetectorRef
+        },
+        error: (err) => console.error('Ошибка загрузки данных:', err)
+      });
+    }
   }
 
   sendClaim() {

@@ -5,6 +5,14 @@
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  color: #1a2634 !important;
+}
+
+.item-info h1, 
+.item-info p, 
+.claim-area h3, 
+.claim-area p {
+  color: #1a2634 !important;
 }
 
 .claim-area {
@@ -17,6 +25,7 @@
 
 .claim-input {
   width: 100%;
+  box-sizing: border-box;
   height: 100px;
   padding: 12px;
   margin: 15px 0;
@@ -24,6 +33,9 @@
   border-radius: 8px;
   resize: none;
   font-family: inherit;
+  background-color: #f8f9fa !important;
+  color: #1a2634 !important;
+  border: 1px solid #3a506b !important;
 }
 
 .btn-claim {

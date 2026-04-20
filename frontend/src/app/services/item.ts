@@ -13,10 +13,17 @@ export class ItemService {
   constructor(private http: HttpClient) {}
 
   getItems(): Observable<Item[]> { 
-  return this.http.get<Item[]>(this.apiUrl);
-}
+    return this.http.get<Item[]>(this.apiUrl);
+  }
 
-  createItem(formData: FormData): Observable<any> {
-    return this.http.post(this.apiUrl, formData);
+  getItemById(id: number): Observable<Item> {
+    return this.http.get<Item>(`${this.apiUrl}${id}/`);
+  }
+
+  createItem(data: any): Observable<any> {
+  const token = localStorage.getItem('auth_token'); // Достаем токен
+  const headers = { 'Authorization': `Bearer ${token}` }; // Создаем заголовок
+
+  return this.http.post(this.apiUrl, data, { headers }); // Отправляем С ЗАГОЛОВКОМ
   }
 }

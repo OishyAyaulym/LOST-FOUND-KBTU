@@ -13,6 +13,7 @@ import { User } from '../../models/interfaces';
   styleUrls: ['./login.css']
 })
 export class LoginComponent {
+  isLoginMode = true;
   loginData = {
     email: '',
     password: '',
@@ -41,18 +42,30 @@ export class LoginComponent {
     this.errorMessage = '';
     const userData: User = {
       email: email,
-      studentId: studentId,
+      username: email.split('@')[0],
+      student_id: studentId,
       password: password,
-      fullName: email.split('@')[0],
     };
-    this.authService.login(userData).subscribe({
-      next: (response) => {
-        console.log('Success login:', response);
-        this.router.navigate(['/']); 
-      },
-      error: (err) => {
-        this.errorMessage = 'Invalid credentials or server error';
-      }
-    });
+    if (this.isLoginMode) {
+        this.authService.login(userData).subscribe({
+          next: (response) => {
+            console.log('Success login:', response);
+            this.router.navigate(['/']); 
+          },
+          error: (err) => {
+            this.errorMessage = 'Invalid credentials or server error';
+          }
+        });
+    } else {
+        this.authService.register(userData).subscribe({
+          next: () => {
+            this.isLoginMode = true;
+            alert('Success! Now please login.');
+          },
+          error: () => {
+            this.errorMessage = 'Registration failed';
+          }
+        });
+    }
   }
 }

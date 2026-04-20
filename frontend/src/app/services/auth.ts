@@ -11,7 +11,15 @@ export class AuthService {
   constructor(private http: HttpClient) {}
   private getUserFromStorage(): User | null {
     const data = localStorage.getItem('user_data');
-    return data ? JSON.parse(data) : null;
+    if (data && data !== "undefined") {
+      try {
+        return JSON.parse(data);
+      } catch (e) {
+        console.error("Ошибка парсинга юзера", e);
+        return null;
+      }
+    }
+    return null;
   }
   getCurrentUser(): User | null {
     return this.currentUser();
@@ -21,12 +29,21 @@ export class AuthService {
       tap(response => {
         // Эти действия выполнятся только при успешном ответе
         localStorage.setItem('auth_token', response.access);
-        localStorage.setItem('user_data', JSON.stringify(response.user));
-        this.currentUser.set(response.user);
+        if (response.user) {
+          localStorage.setItem('user_data', JSON.stringify(response.user));
+          this.currentUser.set(response.user);
+        } else {
+          // Если юзера нет в ответе, можно сохранить хотя бы почту из формы
+          const mockUser = { email: userData.email } as User;
+          localStorage.setItem('user_data', JSON.stringify(mockUser));
+          this.currentUser.set(mockUser);
+        }
       })
     );
   }
-
+  register(userData: User): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/register/`, userData);
+  }
   logout() {
     localStorage.clear();
     this.currentUser.set(null);
