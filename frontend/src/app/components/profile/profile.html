@@ -89,9 +89,13 @@
    </div>
 
 
-   <div class="modal-gallery" *ngIf="selectedItem?.images">
-       <img *ngFor="let img of selectedItem.images" [src]="img.image_url" class="gallery-thumb">
-   </div>
+   <div class="modal-gallery" *ngIf="selectedItem?.images?.length">
+    <img 
+      *ngFor="let img of selectedItem.images" 
+      [src]="img.image.startsWith('http') ? img.image : 'http://127.0.0.1:8000' + img.image" 
+      class="gallery-thumb"
+      alt="item image">
+  </div>
 
 
    <div class="modal-divider"></div>
