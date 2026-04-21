@@ -8,13 +8,14 @@ class ItemImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'image']
 
 class CommentSerializer(serializers.ModelSerializer):
+    item = serializers.PrimaryKeyRelatedField(queryset=Item.objects.all())
     itemId = serializers.ReadOnlyField(source='item.id')
     authorName = serializers.ReadOnlyField(source='author.username')
     createdAt = serializers.DateTimeField(source='created_at', format="%Y-%m-%dT%H:%M:%S", read_only=True)
 
     class Meta:
         model = Comment
-        fields = ['id', 'itemId', 'authorName', 'text', 'createdAt']
+        fields = ['id', 'item' ,'itemId', 'authorName', 'text', 'createdAt']
 
     def create(self, validated_data):
         return Comment.objects.create(**validated_data)

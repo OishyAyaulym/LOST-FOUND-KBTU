@@ -57,6 +57,18 @@ class ItemDetail(APIView):
         if not item: return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = ItemSerializer(item)
         return Response(serializer.data)
+    def patch(self, request, pk):
+        try:
+            item = Item.objects.get(pk=pk)
+        except Item.DoesNotExist:
+            return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = ItemSerializer(item, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
         item = self.get_object(pk)

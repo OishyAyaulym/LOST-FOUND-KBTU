@@ -6,3 +6,5 @@ __pycache__/
 frontend/node_modules/
 node_modules/
 .DS_Store
+backend/media/
+media/

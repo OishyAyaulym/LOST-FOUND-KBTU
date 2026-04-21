@@ -71,7 +71,6 @@
            <span class="status-badge-modern pending">{{ req.status }}</span>
            <div class="btn-group">
              <button class="btn-sm outline" (click)="openModal(req, 'view-my-claim')">View Claim</button>
-             <button class="btn-sm solid" (click)="openModal(req, 'edit-my-claim')">Edit</button>
            </div>
          </div>
        </div>
@@ -122,9 +121,16 @@
     </div>
 
    <div *ngIf="modalType === 'edit' && selectedItem">
-     <label class="meta-label">Edit Item Title:</label>
-     <input [(ngModel)]="selectedItem.title" class="modern-input">
-     <button (click)="closeModal()" class="btn-save-full">Save Changes</button>
+     <h4 class="section-subtitle">Edit Item Details</h4>
+     <div class="edit-form">
+       <label class="meta-label">Title:</label>
+       <input [(ngModel)]="selectedItem.title" class="modern-input" placeholder="Item name">
+       <label class="meta-label" style="margin-top: 15px; display: block;">Description:</label>
+       <textarea [(ngModel)]="selectedItem.description" class="modern-textarea" placeholder="More details about where/how you found it..."></textarea>
+       <div class="modal-actions" style="margin-top: 20px;">
+         <button (click)="updateItem()" class="btn-save-full">Save Changes</button>
+       </div>
+     </div>
    </div>
 
 
@@ -132,18 +138,8 @@
      <h4 class="section-subtitle">Your Request Details:</h4>
      <div class="claim-detail-box">
        <p class="meta-label">Your message to founder:</p>
-       <p class="claim-text">"I lost this item in the canteen. Please contact me."</p>
+       <p class="claim-text">"{{ selectedItem?.description }}"</p>
      </div>
    </div>
-
-
-   <div *ngIf="modalType === 'edit-my-claim'">
-     <h4 class="section-subtitle">Update Your Request:</h4>
-     <label class="meta-label">Message to founder:</label>
-     <textarea class="modern-textarea" placeholder="Describe the item better..."></textarea>
-     <button (click)="closeModal()" class="btn-save-full">Update Request</button>
-   </div>
-
-
  </div>
 </div>

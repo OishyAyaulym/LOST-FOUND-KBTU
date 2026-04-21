@@ -6,6 +6,7 @@ import { User, Item } from '../../models/interfaces';
 import { ItemService } from '../../services/item';
 import { ClaimService } from '../../services/claim';
 import { ChangeDetectorRef } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 type ModalType = 'claims' | 'edit' | 'view-my-claim' | 'edit-my-claim';
 
@@ -30,7 +31,7 @@ export class ProfileComponent implements OnInit {
   myItems: any[] = [];
   claimsOnMyItems: any[] = [];
 
- constructor(private authService: AuthService, private itemService: ItemService, private claimService: ClaimService, private cdr: ChangeDetectorRef) {}
+ constructor(private http: HttpClient, private authService: AuthService, private itemService: ItemService, private claimService: ClaimService, private cdr: ChangeDetectorRef) {}
 
 
  ngOnInit() {
@@ -60,7 +61,7 @@ export class ProfileComponent implements OnInit {
   }
 
  openModal(item: any, type: ModalType) {
-   this.selectedItem = item;
+   this.selectedItem = { ...item };
    this.modalType = type;
    this.currentImgIndex = 0;
    this.showModal = true;
@@ -106,5 +107,22 @@ export class ProfileComponent implements OnInit {
   getClaimsForItem(itemId: number | undefined) {
     if (!itemId || !this.claimsOnMyItems) return [];
     return this.claimsOnMyItems.filter((c: any) => c.itemId === itemId || c.item === itemId);
+  }
+  updateItem() {
+    if (!this.selectedItem) return;
+    this.http.patch(`http://127.0.0.1:8000/api/items/${this.selectedItem.id}/`, {
+      title: this.selectedItem.title,
+      description: this.selectedItem.description
+    }).subscribe({
+      next: (response) => {
+        console.log('Item updated successfully', response);
+        this.loadMyData();
+        this.closeModal();
+      },
+      error: (err) => {
+        console.error('Update failed', err);
+        alert('Error updating item');
+      }
+    });
   }
 }

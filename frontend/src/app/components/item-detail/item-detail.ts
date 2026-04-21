@@ -2,12 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, Location } from '@angular/common';
 import { Claim, Comment, Item } from '../../models/interfaces';
-import { ItemService } from '../../services/item'; // Сервис для получения данных
+import { ItemService } from '../../services/item';
 import { ClaimService } from '../../services/claim';
 import { AuthService } from '../../services/auth';
 import { ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-
 @Component({
   selector: 'app-item-detail',
   standalone: true,
@@ -21,7 +20,6 @@ export class ItemDetailComponent implements OnInit {
   alreadyClaimed: boolean = false;
   currentIndex: number = 0;
   item: any;
-  
   claimDescription: string = ''; 
   newClaim: Partial<Claim> = { description: '' };
   comments: Comment[] = [];
@@ -97,20 +95,34 @@ export class ItemDetailComponent implements OnInit {
   }
 
   postComment() {
-    if (!this.newCommentText.trim()) return;
-    this.comments.push({ authorName: 'Student', text: this.newCommentText } as any);
-    this.newCommentText = '';
-  }
-
-  submitComment() {
     if (!this.newCommentText.trim() || !this.selectedItem) return;
-    this.itemService.addComment(this.selectedItem.id, this.newCommentText).subscribe({
+
+    const textToSend = this.newCommentText;
+    this.newCommentText = '';
+    this.itemService.addComment(this.selectedItem.id, textToSend).subscribe({
       next: (comment) => {
-        if (!this.selectedItem!.comments) this.selectedItem!.comments = [];
-        this.selectedItem!.comments.push(comment);
-        this.newCommentText = '';
+        const updatedComments = this.selectedItem!.comments ? [...this.selectedItem!.comments] : [];
+        updatedComments.push(comment);
+        this.selectedItem = {
+          ...this.selectedItem!,
+          comments: updatedComments
+        };
+        console.log('Сообщение улетело в чат!', comment);
+        this.cdr.detectChanges();
+        this.scrollToBottom();
       },
-      error: (err) => console.error('Ошибка комментария:', err)
+      error: (err) => {
+        console.error('Ошибка:', err);
+        this.newCommentText = textToSend; 
+      }
     });
+  }
+  scrollToBottom() {
+    setTimeout(() => {
+      const chatBox = document.querySelector('.comments-list');
+      if (chatBox) {
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }, 100);
   }
 }
