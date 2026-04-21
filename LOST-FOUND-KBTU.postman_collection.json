@@ -1,0 +1,303 @@
+{
+  "info": {
+    "_postman_id": "3bb5ceb6-d9a6-440d-ad83-f208e8a17175",
+    "name": "LOST-FOUND-KBTU",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53770611",
+    "_collection_link": "https://go.postman.co/collection/53770611-3bb5ceb6-d9a6-440d-ad83-f208e8a17175?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Token",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\": \"a_kopzhanova\",\r\n    \"password\": \"12345678\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/token/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "token",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Refresh Token",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3Njg4Mzc4MywiaWF0IjoxNzc2Nzk3MzgzLCJqdGkiOiJjMmFjNjg0MDNjZjQ0OGE4ODRmY2JiMWJkYjJhOTQ3NCIsInVzZXJfaWQiOiI1In0.WpdpraQMUDGKZRQWyJQPyfK8nzfdG9xhlfzD3RalqkQ\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/token/refresh/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "token",
+            "refresh",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "List Items",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc2Nzk3ODYzLCJpYXQiOjE3NzY3OTc1NjMsImp0aSI6ImIzYWI1OWVhOTRjMDQ2OTE4ODczYWMyM2U0MTI2NjBjIiwidXNlcl9pZCI6IjUifQ.W8Vl-yRDZ2WEKAKQwU5WhakacPebZTUBVJymnWFFn5Q",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3Njg4Mjk0OSwiaWF0IjoxNzc2Nzk2NTQ5LCJqdGkiOiIwYTA4ZTJlYWYyMGU0MTZlYmZjNWRhMmJjMWQyYmIyNyIsInVzZXJfaWQiOiI1In0.wR_UfMmviLXkwD3yCQXLB7XhQKr3IzKpqUnPauKd7P0\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/items/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "items",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Post Item",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc2Nzk3ODYzLCJpYXQiOjE3NzY3OTc1NjMsImp0aSI6ImIzYWI1OWVhOTRjMDQ2OTE4ODczYWMyM2U0MTI2NjBjIiwidXNlcl9pZCI6IjUifQ.W8Vl-yRDZ2WEKAKQwU5WhakacPebZTUBVJymnWFFn5Q",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n        \"title\": \"car keys\",\r\n        \"category\": 3,\r\n        \"category_name\": \"Keys\",\r\n        \"location\": \"tole bi stairs\",\r\n        \"date\": \"2026-04-20\",\r\n        \"type\": \"Found\",\r\n        \"description\": \"i found keys\",\r\n        \"images\": [\r\n            {\r\n                \"id\": 1,\r\n                \"image\": \"/media/items/gallery/%D0%91%D0%B5%D0%B7_%D0%BD%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F.jpeg\"\r\n            }\r\n        ],\r\n        \"comments\": [],\r\n        \"status\": \"returned\",\r\n        \"postedBy\": \"a_oishy\",\r\n        \"finder\": 2,\r\n        \"claims\": [\r\n            {\r\n                \"id\": 1,\r\n                \"username\": \"ai_oishy\",\r\n                \"student_id\": \"24B011111\",\r\n                \"description\": \"this is my key\",\r\n                \"status\": \"approved\",\r\n                \"created_at\": \"2026-04-21T11:28:45.363888Z\"\r\n            }\r\n        ]\r\n    }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/items/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "items",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Item",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc2Nzk4MzYzLCJpYXQiOjE3NzY3OTgwNjMsImp0aSI6IjMxN2U4ZGVkNGI3ODQ4MTI5MzBkYTI3N2I1YzYwMTQ0IiwidXNlcl9pZCI6IjUifQ.ff_LFYF7kw6lxubukl9Eug0uLTSyXSJ9cCT3B8gQrFg",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n        \"title\": \"car keys\",\r\n        \"category\": 3,\r\n        \"category_name\": \"Keys\",\r\n        \"location\": \"tole bi stairs\",\r\n        \"date\": \"2026-04-20\",\r\n        \"type\": \"Found\",\r\n        \"description\": \"i found keys\",\r\n        \"images\": [\r\n            {\r\n                \"id\": 1,\r\n                \"image\": \"/media/items/gallery/%D0%91%D0%B5%D0%B7_%D0%BD%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F.jpeg\"\r\n            }\r\n        ],\r\n        \"comments\": [],\r\n        \"status\": \"returned\",\r\n        \"postedBy\": \"a_oishy\",\r\n        \"finder\": 2,\r\n        \"claims\": [\r\n            {\r\n                \"id\": 1,\r\n                \"username\": \"ai_oishy\",\r\n                \"student_id\": \"24B011111\",\r\n                \"description\": \"this is my key\",\r\n                \"status\": \"approved\",\r\n                \"created_at\": \"2026-04-21T11:28:45.363888Z\"\r\n            }\r\n        ]\r\n    }"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/items/7/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "items",
+            "7",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Comments for an item",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc2Nzk4MzYzLCJpYXQiOjE3NzY3OTgwNjMsImp0aSI6IjMxN2U4ZGVkNGI3ODQ4MTI5MzBkYTI3N2I1YzYwMTQ0IiwidXNlcl9pZCI6IjUifQ.ff_LFYF7kw6lxubukl9Eug0uLTSyXSJ9cCT3B8gQrFg",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n        \"title\": \"car keys\",\r\n        \"category\": 3,\r\n        \"category_name\": \"Keys\",\r\n        \"location\": \"tole bi stairs\",\r\n        \"date\": \"2026-04-20\",\r\n        \"type\": \"Found\",\r\n        \"description\": \"i found keys\",\r\n        \"images\": [\r\n            {\r\n                \"id\": 1,\r\n                \"image\": \"/media/items/gallery/%D0%91%D0%B5%D0%B7_%D0%BD%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F.jpeg\"\r\n            }\r\n        ],\r\n        \"comments\": [],\r\n        \"status\": \"returned\",\r\n        \"postedBy\": \"a_oishy\",\r\n        \"finder\": 2,\r\n        \"claims\": [\r\n            {\r\n                \"id\": 1,\r\n                \"username\": \"ai_oishy\",\r\n                \"student_id\": \"24B011111\",\r\n                \"description\": \"this is my key\",\r\n                \"status\": \"approved\",\r\n                \"created_at\": \"2026-04-21T11:28:45.363888Z\"\r\n            }\r\n        ]\r\n    }"
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/items/3/comments/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "items",
+            "3",
+            "comments",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "View Stats",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc2Nzk4ODY3LCJpYXQiOjE3NzY3OTg1NjcsImp0aSI6IjIwOGUyOTU1MDcyMTQ5Yjg4NDY4Mzk2MGRkNDhjZjgyIiwidXNlcl9pZCI6IjUifQ.NO69L3-MrB0K9esv4euZeUV7tgeBw50mlCPtF4wFVBU",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8000/api/stats/",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "stats",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Claims",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ]
+}
