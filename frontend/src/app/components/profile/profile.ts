@@ -1,48 +1,110 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth';
-import { RouterModule } from '@angular/router';
+import { User, Item } from '../../models/interfaces';
+import { ItemService } from '../../services/item';
+import { ClaimService } from '../../services/claim';
+import { ChangeDetectorRef } from '@angular/core';
+
+type ModalType = 'claims' | 'edit' | 'view-my-claim' | 'edit-my-claim';
+
 
 @Component({
-  selector: 'app-profile',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './profile.html',
-  styleUrls: ['./profile.css']
+ selector: 'app-profile',
+ standalone: true,
+ imports: [CommonModule, FormsModule],
+ templateUrl: './profile.html',
+ styleUrls: ['./profile.css']
 })
 export class ProfileComponent implements OnInit {
-  // Данные пользователя
-  user: any = null;
+  user: User | null = null;
+  showModal = false;
+  modalType: ModalType = 'claims';
+  currentImgIndex = 0;
+  selectedItem: any = null;
+  selectedClaims: any[] = [];
+  enlargedImage: string | null = null;
+  myClaims: Item[] = [];
+  mySentRequests: any[] = [];
+  myItems: any[] = [];
+  claimsOnMyItems: any[] = [];
 
-  // Твои мок-данные для красивого списка (Claims)
-  // Мы используем их, чтобы страница не была пустой
-  myClaims = [
-    { 
-      id: 1, 
-      title: 'AirPods Pro 2 (Case)', 
-      date: '14.04.2026', 
-      status: 'Approved',
-      location: 'Canteen' 
-    },
-    { 
-      id: 2, 
-      title: 'Student Card (ID)', 
-      date: '15.04.2026', 
-      status: 'Pending',
-      location: 'Library' 
-    },
-    { 
-      id: 3, 
-      title: 'Black Wallet', 
-      date: '16.04.2026', 
-      status: 'Rejected',
-      location: '1st Floor Hall' 
-    }
-  ];
+ constructor(private authService: AuthService, private itemService: ItemService, private claimService: ClaimService, private cdr: ChangeDetectorRef) {}
 
-  constructor(private authService: AuthService) {}
 
-  ngOnInit() {
-    this.user = this.authService.getCurrentUser();
+ ngOnInit() {
+   this.user = this.authService.getCurrentUser();
+   console.log('Текущий юзер:', this.user);
+   this.loadMyData();
+ }
+  loadMyData() {
+    this.itemService.getMyItems().subscribe(items => {
+      console.log('📦 Мои находки (Items) из БД:', items); 
+      this.myItems = items; 
+      this.cdr.detectChanges();
+    });
+
+    this.claimService.getMyClaims().subscribe(claims => {
+      console.log('📝 Мои заявки (Claims) из БД:', claims); 
+      this.mySentRequests = claims; 
+      this.cdr.detectChanges();
+    });
+    this.claimService.getClaimsOnMyItems().subscribe({
+      next: (data) => {
+        this.claimsOnMyItems = data; 
+        console.log('Заявки на мои вещи:', data);
+      },
+      error: (err) => console.error('Ошибка загрузки заявок:', err)
+    });
+  }
+
+ openModal(item: any, type: ModalType) {
+   this.selectedItem = item;
+   this.modalType = type;
+   this.currentImgIndex = 0;
+   this.showModal = true;
+ }
+
+ openImageFull(url: string) {
+   this.enlargedImage = url;
+ }
+
+ closeImageFull() {
+   this.enlargedImage = null;
+ }
+
+ closeModal() {
+   this.showModal = false;
+ }
+ getFilteredClaims() {
+    if (!this.selectedItem) return [];
+    return this.claimsOnMyItems.filter(c => c.item === this.selectedItem.id);
+  }
+
+ approveClaim(claim: any) {
+    if (confirm('Are you sure you want to approve this student?')) {
+      this.claimService.updateClaimStatus(claim.id, 'approved').subscribe({
+        next: () => {
+          alert('Item marked as Returned!');
+          this.loadMyData(); 
+          this.showModal = false;
+        },
+        error: (err) => console.error('Error:', err)
+      });
     }
   }
+
+  rejectClaim(claim: any) {
+    this.claimService.updateClaimStatus(claim.id, 'rejected').subscribe({
+      next: () => {
+        alert('Claim rejected.');
+        this.loadMyData();
+      }
+    });
+  }
+  getClaimsForItem(itemId: number | undefined) {
+    if (!itemId || !this.claimsOnMyItems) return [];
+    return this.claimsOnMyItems.filter((c: any) => c.itemId === itemId || c.item === itemId);
+  }
+}

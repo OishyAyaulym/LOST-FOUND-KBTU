@@ -2,11 +2,10 @@
 .app-wrapper {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* 100% высоты видимой части браузера */
+  min-height: 100vh; 
   background-color: #0b1a29;
 }
 
-/* Растягиваем центральную часть, чтобы прижать футер к низу */
 .content-area {
   flex: 1; 
   display: flex;

@@ -51,22 +51,19 @@
       </div>
 
       <div class="form-section">
-        <span class="section-number">3. Photo</span>
+        <span class="section-number">3. Photos</span>
         <div class="upload-area" (click)="fileInput.click()">
-            <input type="file" 
-                #fileInput 
-                (change)="onFileSelected($event)" 
-                accept="image/*" 
-                style="display: none;">
-    
-           <div class="upload-placeholder" *ngIf="!imagePreview">
+          <input type="file" #fileInput (change)="onFilesSelected($event)" accept="image/*" multiple style="display: none;">
+          <div class="upload-placeholder">
             <span class="icon">📤</span>
-            <p>Click to upload item photo</p>
-           </div>
+            <p>Click to upload one or more photos</p>
+          </div>
+        </div>
 
-          <div class="preview-container" *ngIf="imagePreview">
-            <img [src]="imagePreview" class="img-preview">
-            <button type="button" class="remove-btn" (click)="removeImage($event)">Remove</button>
+        <div class="previews-grid" *ngIf="imagePreviews.length > 0">
+          <div class="preview-item" *ngFor="let preview of imagePreviews; let i = index">
+            <img [src]="preview" class="img-preview">
+            <button type="button" class="remove-btn-small" (click)="removeImage(i, $event)">×</button>
           </div>
         </div>
       </div>

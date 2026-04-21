@@ -12,17 +12,25 @@ export interface Item {
   status: 'available' | 'under_review' | 'returned';
   type: 'Lost' | 'Found';
   category: string;
-  imageUrl: string;
+  images:ItemImage[];
   date: string;
   postedBy: string;
 }
 
-export interface Claim {
+export interface ItemImage{
   id?: number;
-  itemId: number;       
+  image: string;
+}
+
+
+export interface Claim {
+  id?: number;     
   description: string;
+  item: number;  
   status?: 'pending' | 'approved' | 'rejected'; 
-  date?: string;        
+  user?:number;
+  created_at?: string; 
+
 }
 
 export interface User {
@@ -31,4 +39,12 @@ export interface User {
   username: string;
   student_id: string;
   password?: string;
+}
+
+export interface Comment {
+  id: number;
+  itemId: number;
+  authorName: string;
+  text: string;
+  createdAt: string;
 }

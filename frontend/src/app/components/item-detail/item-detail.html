@@ -1,27 +1,67 @@
-<div class="detail-wrapper" *ngIf="item">
-  <div class="item-info">
-    <h1>{{ item.title }}</h1>
-    <p>{{ item.description }}</p>
+<div class="item-detail-container" *ngIf="selectedItem; else loading">
+  <button class="btn-back-blue" (click)="goBack()">‹ Back to List</button>
+
+  <div class="main-card">
+    <div class="image-column">
+      <div class="image-wrapper gallery">
+        <button class="nav-btn prev" (click)="prevImage()" *ngIf="selectedItem.images.length > 1">‹</button>
+        
+        <ng-container *ngIf="selectedItem.images && selectedItem.images.length > 0; else noImg">
+          <img [src]="'http://127.0.0.1:8000' + selectedItem.images[currentIndex].image" alt="Item photo">
+        </ng-container>
+
+        <ng-template #noImg>
+          <div class="no-img-placeholder">📷 No Photo</div>
+        </ng-template>
+        
+        <button class="nav-btn next" (click)="nextImage()" *ngIf="selectedItem.images.length > 1">›</button>
+      </div>
+    </div>
+
+    <div class="info-column">
+      <h1 class="item-title">{{ selectedItem.title }}</h1>
+      <div class="details-list">
+        <p>
+          <strong>Category:</strong> 
+          {{ 
+            selectedItem.category == '1' ? 'Electronics' :
+            selectedItem.category == '2' ? 'Documents' :
+            selectedItem.category == '3' ? 'Keys' :
+            selectedItem.category == '4' ? 'Clothing' :
+            'Other'
+          }}
+        </p>
+        <p><strong>Status:</strong> <span class="status-badge">{{ selectedItem.status }}</span></p>
+        <p><strong>Date:</strong> {{ selectedItem.date }}</p>
+        <p><strong>Location:</strong> {{ selectedItem.location }}</p>
+      </div>
+
+      <div class="claim-modal-box" *ngIf="!alreadyClaimed">
+        <h3 class="claim-title">CLAIM THIS ITEM</h3>
+        <textarea [(ngModel)]="claimDescription" placeholder="Prove it's yours..." class="claim-input"></textarea>
+        <button class="btn-submit-blue" (click)="submitClaim()">SEND CLAIM</button>
+      </div>
+      <div *ngIf="alreadyClaimed" class="success-text">✅ Claim sent!</div>
+    </div>
   </div>
 
-  <hr>
-
-  <div class="claim-area" *ngIf="authService.isLoggedIn() && !isMyPost && !hasAlreadyClaimed">
-    <h3>Это ваша вещь? ✋</h3>
-    <p>Докажите владение (опишите приметы, обои на экране и т.д.)</p>
-    
-    <textarea 
-      [(ngModel)]="claimDescription" 
-      placeholder="Напишите здесь..." 
-      class="claim-input">
-    </textarea>
-    
-    <button (click)="sendClaim()" class="btn-claim">
-      Отправить запрос на возврат
-    </button>
-  </div>
-
-  <div class="success-msg" *ngIf="hasAlreadyClaimed">
-    <p>Ваша заявка принята и находится на рассмотрении (Pending).</p>
+  <div class="comments-container">
+    <div class="comments-section">
+      <h3>💬 Comments</h3>
+      <div class="comments-list">
+        <div class="comment-bubble" *ngFor="let c of comments">
+          <span class="comment-user">{{ c.authorName }}</span>
+          <p class="comment-text">{{ c.text }}</p>
+        </div>
+      </div>
+      <div class="comment-input-group">
+        <input type="text" [(ngModel)]="newCommentText" placeholder="Write..." (keyup.enter)="postComment()">
+        <button (click)="postComment()" class="btn-send">Send</button>
+      </div>
+    </div>
   </div>
 </div>
+
+<ng-template #loading>
+  <div class="loading-state">Loading item details...</div>
+</ng-template>

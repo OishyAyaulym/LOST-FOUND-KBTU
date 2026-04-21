@@ -41,16 +41,12 @@
       @for (item of items; track item.id) {
         <div class="item-card-flat" [class.is-returned]="item.status === 'returned'" (click)="viewItemDetails(item.id)" style="cursor: pointer;">
           <div class="item-thumb">
-            @if (item.images && item.images.length > 0) {
-              <img [src]="item.images[0].image_url">
-            } @else {
-              <div class="no-img-icon">📷</div>
-            }
+            <img [src]="'http://127.0.0.1:8000' + item.images[0].image" *ngIf="item.images && item.images.length > 0">
           </div>
+
           <div class="item-data">
             <div class="item-top">
               <span class="item-name">{{item.title}}</span>
-              <!--Меняет класс в зависимости от статуса -->
               <span class="status-tag" [ngClass]="{
                 'lost': item.type === 'Lost',
                 'found': item.type === 'Found'
@@ -59,7 +55,15 @@
               </span>
             </div>
             <div class="item-bottom">
-              <p>Category: {{ item.category }}</p>
+              <p>Category: 
+                {{ 
+                  item.category == '1' ? 'Electronics' :
+                  item.category == '2' ? 'Documents' :
+                  item.category == '3' ? 'Keys' :
+                  item.category == '4' ? 'Clothing' :
+                  'Other'
+                }}
+              </p>
               <p>Location: {{item.location}}</p>
               <p>Posted by: {{ item.postedBy }}</p>
               <p>Date: {{ item.date }}</p>
@@ -70,6 +74,7 @@
           </div>
         </div>
       }
+      
       @if (items.length === 0) {
         <div class="no-results">
           <div class="no-results-inner">
@@ -80,7 +85,7 @@
           </div>
         </div>
       }
-    } @else{
+    } @else {
       <div class="loading-state">
         <p>Загрузка объявлений KBTU...</p>
       </div>

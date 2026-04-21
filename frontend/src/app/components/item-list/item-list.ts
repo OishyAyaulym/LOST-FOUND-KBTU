@@ -1,6 +1,6 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ItemService } from '../../services/item'; 
+import { ItemService } from '../../services/item';
 import { Item } from '../../models/interfaces';
 import { Router } from '@angular/router';
 
@@ -11,25 +11,31 @@ import { Router } from '@angular/router';
   templateUrl: './item-list.html',
   styleUrls: ['./item-list.css']
 })
-export class ItemListComponent {
+export class ItemListComponent implements OnInit {
 
-  allItems: any[] = [];
+  allItems: any[] = []; 
   items: any[] = [];
 
-  constructor(private itemService: ItemService, private router: Router, private cdr: ChangeDetectorRef){}
-  ngOnInit(){
+  constructor(
+    private itemService: ItemService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit() {
     this.loadItems();
   }
-  loadItems(){
+
+  loadItems() {
     this.itemService.getItems().subscribe({
-      next: (data)=>{
-        console.log('Getting data:', data);
+      next: (data) => {
+        console.log('Данные из БД получены:', data);
         this.allItems = data;
         this.items = data;
-        this.cdr.detectChanges();
+        this.cdr.detectChanges(); 
       },
-      error: (err)=>{
-        console.log('Error in getting data:', err);
+      error: (err) => {
+        console.error('Ошибка при получении данных из БД:', err);
       }
     });
   }
@@ -44,12 +50,13 @@ export class ItemListComponent {
     console.log('Поиск по тексту:', search);
     console.log('Найдено:', this.items.length);
   }
+
   viewItemDetails(id: number | undefined) {
-  if (id) {
-      this.router.navigate(['/item', id]); 
+    if (id) {
+      this.router.navigate(['/item', id]);
     }
   }
- 
+
   resetFilters() {
     this.items = [...this.allItems];
   }

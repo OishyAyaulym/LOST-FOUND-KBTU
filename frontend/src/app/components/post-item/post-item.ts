@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ItemService } from '../../services/item'; 
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth'
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-post-item',
@@ -16,67 +16,60 @@ export class PostItemComponent {
   title: string = '';
   description: string = '';
   status: string = 'lost';
-  category: string = '';
+  category: string = '1'; 
   location: string = '';
 
-  selectedFile: File | null = null;
-  imagePreview: string | ArrayBuffer | null = null;
+  selectedFiles: File[] = [];
+  imagePreviews: (string | ArrayBuffer | null)[] = [];
 
-  constructor(private itemService: ItemService , private authService: AuthService, private router:Router) {}
+  constructor(
+    private itemService: ItemService, 
+    private authService: AuthService, 
+    private router: Router
+  ) {}
 
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview = reader.result;
-      };
-      reader.readAsDataURL(file);
+  onFilesSelected(event: any) {
+    const files: FileList = event.target.files;
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        this.selectedFiles.push(file);
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.imagePreviews.push(reader.result);
+        };
+        reader.readAsDataURL(file);
+      }
     }
   }
 
-  removeImage(event: Event) {
+  removeImage(index: number, event: Event) {
     event.stopPropagation();
-    this.selectedFile = null;
-    this.imagePreview = null;
+    this.selectedFiles.splice(index, 1);
+    this.imagePreviews.splice(index, 1);
   }
 
   submitForm() {
-    const currentUser = this.authService.currentUser();
-    console.log('User data:', this.authService.currentUser());
-    
-    const itemData = {
-      title: this.title,
-      description: this.description,
-      location: this.location,
-      category: Number(this.category), // Шлем ID (цифру)
-      type: this.status.charAt(0).toUpperCase() + this.status.slice(1), // Шлем "Type", так как в сериализаторе 'type'
-      //finder: 1 ,//currentUser?.id, // Шлем ID пользователя в поле 'finder'
-      status: 'available'
-    };
-
-    console.log('Данные для отправки:', itemData);
-
-    this.itemService.createItem(itemData).subscribe({
-      next: (response) => {
-        alert('Ура! Объявление создано!');
+    const formData = new FormData();
+    formData.append('title', this.title);
+    formData.append('description', this.description);
+    formData.append('location', this.location);
+    formData.append('category', this.category);
+    formData.append('status', 'available');
+    const formattedType = this.status.charAt(0).toUpperCase() + this.status.slice(1); 
+    formData.append('type', formattedType); 
+    this.selectedFiles.forEach((file) => {
+      formData.append('uploaded_images', file, file.name); 
+    });
+    this.itemService.createItem(formData).subscribe({
+      next: () => {
+        alert('Объявление успешно создано через FormData!');
         this.router.navigate(['/']);
       },
       error: (err) => {
-        console.error('Ошибка от Django:', err.error);
-        alert('Ошибка 400. Проверь детали в консоли.');
+        console.error('Ошибка бэкенда:', err);
+        alert('Ошибка! Загляни в консоль (F12), там написано, что не нравится Django.');
       }
     });
-  }
-
-  resetForm() {
-    this.title = '';
-    this.description = '';
-    this.status = 'lost';
-    this.category = '';
-    this.location = '';
-    this.selectedFile = null;
-    this.imagePreview = null;
   }
 }

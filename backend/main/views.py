@@ -99,27 +99,41 @@ class ClaimList(APIView):
     
 class ClaimDetail(APIView):
     permission_classes = [IsAuthenticated]
-    def get_object(self, pk, user):
+    def get_object(self, pk):
         try:
-            return Claim.objects.get(pk=pk, user=user)
+            return Claim.objects.get(pk=pk)
         except Claim.DoesNotExist:
             return None
+
     def get(self, request, pk):
-        claim = self.get_object(pk, request.user)
-        if not claim: return Response({"error": "Not found"}, status=status.HTTP_404_NOT_FOUND)
+        claim = self.get_object(pk)
+        if not claim: 
+            return Response({"error": "Not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = ClaimSerializer(claim)
         return Response(serializer.data)
-    def put(self, request, pk):
-        claim = self.get_object(pk, request.user)
-        if not claim: return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def patch(self, request, pk):
+        claim = self.get_object(pk)
+        if not claim: 
+            return Response({"error": "Claim not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = ClaimSerializer(claim, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            if request.data.get('status') == 'approved':
+                try:
+                    item = claim.item
+                    item.status = 'returned'
+                    item.save()
+                    Claim.objects.filter(item=item).exclude(id=claim.id).update(status='rejected')
+                except Exception as e:
+                    print(f"Ошибка при обновлении статусов: {e}")
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def delete(self, request, pk):
-        claim = self.get_object(pk, request.user)
-        if not claim: return Response(status=status.HTTP_404_NOT_FOUND)
+        claim = self.get_object(pk)
+        if not claim: 
+            return Response(status=status.HTTP_404_NOT_FOUND)
         claim.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
@@ -127,3 +141,26 @@ class RegisterView(generics.CreateAPIView):
     queryset = get_user_model().objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
+
+class MyItemsView(generics.ListAPIView):
+    serializer_class = ItemSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Item.objects.filter(finder=self.request.user).order_by('-created_at')
+    def perform_create(self, serializer):
+        serializer.save(finder=self.request.user)
+
+class MyClaimsView(generics.ListAPIView):
+    serializer_class = ClaimSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Claim.objects.filter(user=self.request.user).order_by('-created_at')
+    
+class ClaimsOnMyItemsView(generics.ListAPIView):
+    serializer_class = ClaimSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Claim.objects.filter(item__finder=self.request.user).order_by('-created_at')
