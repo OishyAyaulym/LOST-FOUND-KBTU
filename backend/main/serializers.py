@@ -85,6 +85,10 @@ class StatsSerializer(serializers.Serializer):
     total_items = serializers.IntegerField()
     returned_items = serializers.IntegerField()
 
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
 class UserShortSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
